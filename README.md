@@ -6,7 +6,11 @@ by applications like Cassandra.
 
 ## Getting Started
 
-Grab the image from Docker Hub and run it.
+To start everything, run:
+
+```
+make up
+```
 
 ### Prerequisites
 
