@@ -1,4 +1,4 @@
-# Project Title
+# Monitoring Stack
 
 Spin up a complete monitoring stack using Docker.
 Suitable for integration with built-in metrics generated 
@@ -14,5 +14,5 @@ make up
 
 ### Prerequisites
 
-Docker
+Docker  
 Make
