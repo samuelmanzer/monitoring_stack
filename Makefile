@@ -1,4 +1,4 @@
 up:
-	docker-compose up -d
+	./up.sh
 down:
 	docker-compose down

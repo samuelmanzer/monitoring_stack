@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+  ### Begin Graphite Stack ###
   backend:
     image: hopsoft/graphite-statsd
     container_name: monitoring_stack_backend
@@ -24,7 +25,82 @@ services:
     restart: always
     volumes:
       - ./grafana_volume/var/lib/grafana:/var/lib/grafana
+  ### End Graphite Stack ###
+
+  ### Begin Sentry Stack ###
+  redis:
+    image: redis
+    container_name: redis_sentry
+    networks:
+      - sentry_bridge
+    restart: always
+  postgres:
+    image: postgres 
+    container_name: postgres_sentry
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DBNAME: sentry
+      POSTGRES_DBUSER: sentry
+      POSTGRES_DBPASS: sentry
+    volumes:
+      - ./pgdb_volume_sentry:/var/lib/postgresql/data
+    networks:
+      - sentry_bridge
+    restart: always
+  sentry:
+    image: sentry
+    container_name: sentry
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - backend_bridge
+      - sentry_bridge
+    ports:
+      - 9000:9000
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY}
+      SENTRY_POSTGRES_HOST: postgres
+      SENTRY_DB_USER: postgres
+      SENTRY_DB_PASSWORD: postgres
+      SENTRY_REDIS_HOST: redis
+  # cron manages async worker queue
+  sentry_:
+    image: sentry
+    container_name: sentry_cron
+    depends_on:
+      - redis
+      - postgres
+    command: "sentry run cron"
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY}
+      SENTRY_POSTGRES_HOST: postgres
+      SENTRY_DB_USER: postgres
+      SENTRY_DB_PASSWORD: postgres
+      SENTRY_REDIS_HOST: redis
+    networks:
+      - sentry_bridge
+  # Handles tasks like writing new events to DB 
+  sentry_async_worker:
+    image: sentry:latest
+    container_name: sentry_async_worker
+    depends_on:
+      - redis
+      - postgres
+    command: "sentry run worker"
+    environment:
+      SENTRY_SECRET_KEY: ${SENTRY_SECRET_KEY}
+      SENTRY_POSTGRES_HOST: postgres
+      SENTRY_DB_USER: postgres
+      SENTRY_DB_PASSWORD: postgres
+      SENTRY_REDIS_HOST: redis
+    networks:
+      - sentry_bridge
+  ## End Sentry Stack ###
 
 networks:
   backend_bridge:
+    driver: bridge
+  sentry_bridge:
     driver: bridge
