@@ -12,6 +12,8 @@ services:
       - ./graphite_volume/log/graphite:/opt/graphite/storage/log
     environment:
       ALLOWED_HOSTS: grafana
+    ports:
+      - "2003-2004:2003-2004" # carbon receivers
   grafana:
     image: grafana/grafana
     container_name: grafana
