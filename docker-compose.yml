@@ -66,7 +66,7 @@ services:
       SENTRY_DB_PASSWORD: postgres
       SENTRY_REDIS_HOST: redis
   # cron manages async worker queue
-  sentry_:
+  sentry_cron:
     image: sentry
     container_name: sentry_cron
     depends_on:
