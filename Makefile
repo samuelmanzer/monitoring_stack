@@ -13,7 +13,7 @@ sentry-up:
 down: graphite-down sentry-down
 
 graphite-down:
-	docker-compose down -f graphite/docker-compose.yml
+	docker-compose -f graphite/docker-compose.yml down
 
 sentry-down:
-	docker-compose down -f sentry/docker-compose.yml
+	docker-compose -f sentry/docker-compose.yml down

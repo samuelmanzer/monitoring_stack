@@ -20,7 +20,7 @@ services:
     image: grafana/grafana
     container_name: monitoring_stack_frontend
     ports:
-      - "80:3000" # grafana frontend
+      - "${GRAFANA_PORT}:3000" # grafana frontend
     restart: always
     volumes:
       - ./grafana_volume/var/lib/grafana:/var/lib/grafana
