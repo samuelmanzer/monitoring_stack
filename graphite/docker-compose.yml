@@ -1,29 +1,27 @@
 version: '3'
 
 services:
-  backend:
+  graphite:
     image: hopsoft/graphite-statsd
-    container_name: monitoring_stack_backend
-    ports:
-      - "81:80" # nginx reverse proxy to graphite web
-      - "2003-2004:2003-2004" # carbon receivers
-      - "2023-2024:2023-2024" # carbon aggregators
-      - "8125:8125/udp" # statsd
-      - "8126:8126" # statsd admin
+    container_name: graphite
     restart: always
     networks:
       - backend_bridge
     volumes:
       - ./graphite_volume/data/whisper:/opt/graphite/storage/whisper
       - ./graphite_volume/log/graphite:/opt/graphite/storage/log
-  frontend:
+    environment:
+      ALLOWED_HOSTS: grafana
+  grafana:
     image: grafana/grafana
-    container_name: monitoring_stack_frontend
+    container_name: grafana
     ports:
       - "${GRAFANA_PORT}:3000" # grafana frontend
     restart: always
     volumes:
       - ./grafana_volume/var/lib/grafana:/var/lib/grafana
+    networks:
+      - backend_bridge
 
 networks:
   backend_bridge:
