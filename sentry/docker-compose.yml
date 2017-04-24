@@ -1,33 +1,6 @@
 version: '3'
 
 services:
-  ### Begin Graphite Stack ###
-  backend:
-    image: hopsoft/graphite-statsd
-    container_name: monitoring_stack_backend
-    ports:
-      - "81:80" # nginx reverse proxy to graphite web
-      - "2003-2004:2003-2004" # carbon receivers
-      - "2023-2024:2023-2024" # carbon aggregators
-      - "8125:8125/udp" # statsd
-      - "8126:8126" # statsd admin
-    restart: always
-    networks:
-      - backend_bridge
-    volumes:
-      - ./graphite_volume/data/whisper:/opt/graphite/storage/whisper
-      - ./graphite_volume/log/graphite:/opt/graphite/storage/log
-  frontend:
-    image: grafana/grafana
-    container_name: monitoring_stack_frontend
-    ports:
-      - "80:3000" # grafana frontend
-    restart: always
-    volumes:
-      - ./grafana_volume/var/lib/grafana:/var/lib/grafana
-  ### End Graphite Stack ###
-
-  ### Begin Sentry Stack ###
   redis:
     image: redis
     container_name: redis_sentry
@@ -43,11 +16,11 @@ services:
       POSTGRES_DBNAME: sentry
       POSTGRES_DBUSER: sentry
       POSTGRES_DBPASS: sentry
-    volumes:
-      - ./pgdb_volume_sentry:/var/lib/postgresql/data
-    networks:
-      - sentry_bridge
-    restart: always
+      volumes:
+        - ./pgdb_volume_sentry:/var/lib/postgresql/data
+      networks:
+        - sentry_bridge
+      restart: always
   sentry:
     image: sentry
     container_name: sentry
@@ -79,9 +52,9 @@ services:
       SENTRY_DB_USER: postgres
       SENTRY_DB_PASSWORD: postgres
       SENTRY_REDIS_HOST: redis
-    networks:
-      - sentry_bridge
-  # Handles tasks like writing new events to DB 
+      networks:
+        - sentry_bridge
+          # Handles tasks like writing new events to DB 
   sentry_async_worker:
     image: sentry:latest
     container_name: sentry_async_worker
@@ -95,12 +68,8 @@ services:
       SENTRY_DB_USER: postgres
       SENTRY_DB_PASSWORD: postgres
       SENTRY_REDIS_HOST: redis
-    networks:
-      - sentry_bridge
-  ## End Sentry Stack ###
-
-networks:
-  backend_bridge:
-    driver: bridge
-  sentry_bridge:
-    driver: bridge
+      networks:
+        - sentry_bridge
+          ## End Sentry Stack ###
+      sentry_bridge:
+        driver: bridge
