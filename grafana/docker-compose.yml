@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "${GRAFANA_PORT}:3000" # grafana frontend
+    restart: always
+    volumes:
+      - ./grafana_volume/var/lib/grafana:/var/lib/grafana
+    networks:
+      - graphite_collect_and_report
+
+networks:
+  graphite_collect_and_report:
+    external: true
