@@ -9,8 +9,8 @@ services:
     networks:
       - collect_and_report
     volumes:
-      - ./graphite_volume/data/whisper:/opt/graphite/storage/whisper
-      - ./graphite_volume/log/graphite:/opt/graphite/storage/log
+      - ${GRAPHITE_VOLUME_ROOT}/data/whisper:/opt/graphite/storage/whisper
+      - ${GRAPHITE_VOLUME_ROOT}/log/graphite:/opt/graphite/storage/log
     environment:
       ALLOWED_HOSTS: grafana
     ports:
